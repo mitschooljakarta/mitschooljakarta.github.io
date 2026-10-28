@@ -4,10 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MIT School Jakarta | Autism-focused school for ages 4–18</title>
-<meta name="description" content="MIT School Jakarta (Multi Intelligence Transforming School) is an autism-focused school offering individualized education, daily life skills and vocational training for children and teens aged 4–18.">
+<meta name="description" class="i18n" content="MIT School Jakarta (Multi Intelligence Transforming School) is an autism-focused school offering individualized education, daily life skills and vocational training for children and teens aged 4–18." data-id-content="MIT School Jakarta (Multi Intelligence Transforming School) adalah sekolah khusus autisme yang menyediakan pendidikan individual, keterampilan hidup sehari-hari, dan pelatihan vokasional untuk anak dan remaja usia 4–18 tahun.">
 <meta name="theme-color" content="#6B3FA0">
 
 <script>
+  /* Language the page opens in:
+     'auto' = Bahasa Indonesia for visitors whose phone or computer is set to Indonesian,
+              English for everyone else.
+     'id' or 'en' = always open in that language.
+     Visitors can switch any time with EN / ID in the header, and their choice is remembered.
+     A link ending in ?lang=id (or ?lang=en) always opens in that language. */
+  window.DEFAULT_LANGUAGE = 'auto';
+  (function (root) {
+    var lang = null;
+    var m = /[?&]lang=(en|id)\b/.exec(location.search);
+    if (m) lang = m[1];
+    if (!lang) { try { lang = localStorage.getItem('mitLang'); } catch (e) {} }
+    if (lang !== 'en' && lang !== 'id') {
+      if (window.DEFAULT_LANGUAGE === 'en' || window.DEFAULT_LANGUAGE === 'id') {
+        lang = window.DEFAULT_LANGUAGE;
+      } else {
+        var first = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+        lang = /^(id|in)(-|$)/i.test(first) ? 'id' : 'en';
+      }
+    }
+    root.lang = lang;
+  })(document.documentElement);
+
   /* Puzzle intro at the top of the page:
      'always' = every time the page opens, 'once' = first visit per browser tab, 'off' = never.
      Visitors whose device is set to "reduce motion" never see it. */
@@ -58,6 +81,8 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   [hidden] { display: none !important; }
+  /* Two languages: show only the one chosen (lang="en" or lang="id") */
+  html[lang="en"] [lang="id"], html[lang="id"] [lang="en"] { display: none !important; }
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
     font-family: 'Lexend', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -132,23 +157,31 @@
     backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px);
     border-bottom: 1px solid #EEE7F7;
   }
-  .nav { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); }
-  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .nav { display: flex; align-items: center; gap: 10px; height: var(--header-h); }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-right: auto; }
   .brand svg { width: 48px; height: 48px; flex: none; }
   .brand-name { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 19px; color: var(--plum); line-height: 1.1; }
   .brand-sub { font-size: 11.5px; color: var(--muted); line-height: 1.3; }
   .nav-links { display: flex; align-items: center; gap: 2px; }
   .nav-links a {
     display: block; text-decoration: none; font-size: 15px; font-weight: 500;
-    padding: 8px 14px; border-radius: 999px; color: var(--ink); transition: background-color .2s, color .2s;
+    padding: 8px 12px; border-radius: 999px; color: var(--ink); transition: background-color .2s, color .2s;
   }
   .nav-links a:hover, .nav-links a.active { background: var(--lilac); color: var(--purple); }
-  .nav-links .nav-cta { background: var(--purple); color: #fff; margin-left: 10px; padding: 9px 20px; }
+  .nav-links .nav-cta { background: var(--purple); color: #fff; margin-left: 8px; padding: 9px 20px; }
   .nav-links .nav-cta:hover { background: var(--plum); color: #fff; }
   .menu-btn {
     display: none; width: 44px; height: 44px; border: 0; border-radius: 12px; background: var(--lilac);
     color: var(--plum); cursor: pointer; place-items: center;
   }
+  .lang-switch { display: flex; flex: none; padding: 3px; border-radius: 999px; background: var(--lilac); }
+  .lang-switch button {
+    min-width: 40px; height: 34px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent;
+    font: 600 13px/1 'Lexend', sans-serif; letter-spacing: .02em; color: var(--plum); cursor: pointer;
+    transition: background-color .2s, color .2s;
+  }
+  .lang-switch button:hover { color: var(--purple); }
+  .lang-switch button[aria-pressed="true"] { background: var(--purple); color: #fff; }
 
   /* ───────── Hero ───────── */
   .hero { position: relative; background: var(--lilac); padding: 72px 0 104px; overflow: hidden; }
@@ -201,7 +234,10 @@
 
   /* ───────── About ───────── */
   .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
-  .about-photo { aspect-ratio: 4 / 3; border-radius: var(--radius-xl); }
+  /* About photo: shown whole, in its own shape (portrait or landscape), never cropped */
+  .about-photo { border-radius: var(--radius-xl); width: fit-content; max-width: 100%; }
+  .about-photo img { width: auto; height: auto; max-width: 100%; max-height: 680px; }
+  .about-photo.is-missing { width: 100%; aspect-ratio: 4 / 5; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
   .chips li { font-size: 14px; font-weight: 500; padding: 7px 15px; border-radius: 999px; background: var(--lilac); color: var(--plum); }
   .chips li:nth-child(3n+2) { background: var(--peach); }
@@ -245,7 +281,14 @@
   .bakery .sec-head h2 { color: #fff; }
   .bakery .sec-head p { color: rgba(255,255,255,.8); }
   .bake-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-  .bake .photo { aspect-ratio: 4 / 3; border-radius: var(--radius-lg); background-color: rgba(255,255,255,.08); }
+  /* Bakery photos: each photo is shown whole and centered; the space around it is a soft blur of the same photo */
+  .bake .photo { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); background-color: rgba(255,255,255,.08); isolation: isolate; }
+  .bake .photo::before {
+    content: ''; position: absolute; inset: -30px; z-index: -1;
+    background-image: var(--photo); background-size: cover; background-position: center;
+    filter: blur(22px) brightness(.7) saturate(1.1);
+  }
+  .bake .photo img { object-fit: contain; object-position: center; }
   .bake .photo.is-missing { background-color: #4A2A80; }
   .bake h3 { color: #fff; font-size: 23px; margin: 20px 0 6px; }
   .bake p { font-size: 15.5px; color: rgba(255,255,255,.78); }
@@ -452,8 +495,9 @@
   }
 
   /* ───────── Responsive ───────── */
-  @media (max-width: 1000px) {
-    .menu-btn { display: grid; }
+  @media (max-width: 1160px) {
+    .menu-btn { display: grid; order: 3; }
+    .lang-switch { order: 2; }
     .nav-links {
       display: none; position: absolute; top: var(--header-h); left: 0; right: 0; flex-direction: column; align-items: stretch;
       gap: 2px; padding: 12px 16px 20px; background: #fff; border-bottom: 1px solid var(--line); box-shadow: 0 16px 30px rgba(36,20,63,.08);
@@ -461,6 +505,8 @@
     .nav-links.open { display: flex; }
     .nav-links a { padding: 12px 16px; font-size: 16px; }
     .nav-links .nav-cta { margin: 8px 0 0; text-align: center; }
+  }
+  @media (max-width: 1000px) {
     .prog-grid { grid-template-columns: 1fr 1fr; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
   }
@@ -553,7 +599,7 @@
 
 <header class="site-header">
   <nav class="wrap nav" aria-label="Main">
-    <a href="#home" class="brand" aria-label="MIT School Jakarta, back to top">
+    <a href="#home" class="brand i18n" aria-label="MIT School Jakarta, back to top" data-id-aria-label="MIT School Jakarta, kembali ke atas">
       <svg viewBox="0 0 52 52" aria-hidden="true"><use href="#i-logo"/></svg>
       <span>
         <span class="brand-name">MIT School Jakarta</span><br>
@@ -564,34 +610,44 @@
       <svg class="icon"><use href="#i-menu"/></svg>
     </button>
     <ul class="nav-links" id="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#programmes">Programmes</a></li>
-      <li><a href="#bakery">Bakery &amp; Café</a></li>
-      <li><a href="#stories">Stories</a></li>
+      <li><a href="#about"><span lang="en">About</span><span lang="id">Tentang</span></a></li>
+      <li><a href="#programmes"><span lang="en">Programmes</span><span lang="id">Program</span></a></li>
+      <li><a href="#bakery"><span lang="en">Bakery &amp; Café</span><span lang="id">Bakery &amp; Kafe</span></a></li>
+      <li><a href="#stories"><span lang="en">Stories</span><span lang="id">Cerita</span></a></li>
       <li><a href="#instagram">Instagram</a></li>
-      <li><a href="#enrollment" class="nav-cta">Enroll now</a></li>
+      <li><a href="#enrollment" class="nav-cta"><span lang="en">Enroll now</span><span lang="id">Daftar sekarang</span></a></li>
     </ul>
+    <!-- Language switch: EN = English, ID = Bahasa Indonesia -->
+    <div class="lang-switch" role="group" aria-label="Language / Bahasa">
+      <button type="button" data-set-lang="en" title="English" aria-label="English" aria-pressed="true">EN</button>
+      <button type="button" data-set-lang="id" title="Bahasa Indonesia" aria-label="Bahasa Indonesia" aria-pressed="false">ID</button>
+    </div>
   </nav>
 </header>
 
 <main>
 
 <!-- ═════════════ HERO ═════════════ -->
+<!-- Every piece of text appears twice: lang="en" (English) and lang="id" (Bahasa Indonesia).
+     When you change one, change the other too. The switch in the header shows one at a time. -->
 <section class="hero" id="home">
   <canvas id="heroPuzzle" aria-hidden="true"></canvas>
   <div class="wrap hero-grid">
     <div>
-      <p class="kicker">An autism-focused school in Jakarta</p>
-      <h1>Every child deserves to shine and belong</h1>
-      <p class="lede">A specialized school for children and teens with autism, aged 4 to 18. Individualized lessons, everyday life skills and real work experience help every student grow in confidence and independence.</p>
+      <p class="kicker"><span lang="en">An autism-focused school in Jakarta</span><span lang="id">Sekolah khusus autisme di Jakarta</span></p>
+      <h1><span lang="en">Every child deserves to shine and belong</span><span lang="id">Setiap anak berhak bersinar dan diterima</span></h1>
+      <p class="lede">
+        <span lang="en">A specialized school for children and teens with autism, aged 4 to 18. Individualized lessons, everyday life skills and real work experience help every student grow in confidence and independence.</span>
+        <span lang="id">Sekolah khusus untuk anak dan remaja dengan autisme, usia 4 hingga 18 tahun. Pembelajaran yang disesuaikan untuk setiap anak, keterampilan hidup sehari-hari, dan pengalaman kerja nyata membantu setiap siswa tumbuh lebih percaya diri dan mandiri.</span>
+      </p>
       <div class="btn-row">
-        <a href="#enrollment" class="btn btn-primary">Enroll your child</a>
-        <a href="#about" class="btn btn-outline">Learn our story</a>
+        <a href="#enrollment" class="btn btn-primary"><span lang="en">Enroll your child</span><span lang="id">Daftarkan anak Anda</span></a>
+        <a href="#about" class="btn btn-outline"><span lang="en">Learn our story</span><span lang="id">Kenali kami</span></a>
       </div>
       <ul class="facts">
-        <li><strong>Ages 4–18</strong><span>Early years to vocational</span></li>
-        <li><strong>1:4 class ratio</strong><span>Real attention, every day</span></li>
-        <li><strong>English-speaking</strong><span>Builds everyday communication</span></li>
+        <li><strong><span lang="en">Ages 4–18</span><span lang="id">Usia 4–18 tahun</span></strong><span><span lang="en">Early years to vocational</span><span lang="id">Usia dini hingga vokasional</span></span></li>
+        <li><strong><span lang="en">1:4 class ratio</span><span lang="id">Rasio kelas 1:4</span></strong><span><span lang="en">Real attention, every day</span><span lang="id">Perhatian penuh setiap hari</span></span></li>
+        <li><strong><span lang="en">English-speaking</span><span lang="id">Berbahasa Inggris</span></strong><span><span lang="en">Builds everyday communication</span><span lang="id">Melatih komunikasi sehari-hari</span></span></li>
       </ul>
     </div>
 
@@ -599,7 +655,7 @@
     <div class="hero-art">
       <div class="orb orb-orange" aria-hidden="true"></div>
       <figure class="orb orb-photo">
-        <img src="images/hero.jpg" data-fallback="images/bake1.jpg" alt="Two smiling students hugging in the MIT School kitchen" style="object-position: 50% 30%">
+        <img class="i18n" src="images/hero.jpg" data-fallback="images/bake1.jpg" alt="Two smiling students hugging in the MIT School kitchen" data-id-alt="Dua siswa tersenyum sambil berpelukan di dapur MIT School" style="object-position: 50% 30%">
         <span class="lens" aria-hidden="true"></span>
       </figure>
       <div class="orb orb-dot" aria-hidden="true"></div>
@@ -612,39 +668,52 @@
   <div class="wrap">
     <div class="about-grid">
       <div>
-        <div class="photo about-photo" style="aspect-ratio: 4 / 5">
-          <img src="images/classroom.jpeg" alt="Students in a class at MIT School" loading="lazy" style="object-position: 50% 62%">
+        <!-- This photo is shown whole, in its own shape (portrait or landscape), never cropped. -->
+        <div class="photo about-photo">
+          <img class="i18n" src="images/classroom.jpeg" alt="Students in a class at MIT School" data-id-alt="Siswa belajar di kelas MIT School" loading="lazy">
         </div>
-        <ul class="chips" aria-label="What we focus on">
-          <li>Autism specialist</li>
-          <li>Hands-on learning</li>
-          <li>Inclusive community</li>
-          <li>Core academics</li>
-          <li>Workforce training</li>
+        <ul class="chips i18n" aria-label="What we focus on" data-id-aria-label="Fokus kami">
+          <li><span lang="en">Autism specialist</span><span lang="id">Spesialis autisme</span></li>
+          <li><span lang="en">Hands-on learning</span><span lang="id">Belajar lewat praktik</span></li>
+          <li><span lang="en">Inclusive community</span><span lang="id">Komunitas inklusif</span></li>
+          <li><span lang="en">Core academics</span><span lang="id">Akademik inti</span></li>
+          <li><span lang="en">Workforce training</span><span lang="id">Pelatihan kerja</span></li>
         </ul>
       </div>
       <div class="about-copy">
-        <h2>Built for every kind of mind</h2>
-        <p>MIT stands for Multi Intelligence Transforming School. We believe autism is not a barrier. It's a different way of seeing the world. Our school in Jakarta is a safe, structured and joyful space where children on the spectrum can truly flourish.</p>
+        <h2><span lang="en">Built for every kind of mind</span><span lang="id">Dirancang untuk setiap jenis kecerdasan</span></h2>
+        <p>
+          <span lang="en">MIT stands for Multi Intelligence Transforming School. We believe autism is not a barrier. It's a different way of seeing the world. Our school in Jakarta is a safe, structured and joyful space where children on the spectrum can truly flourish.</span>
+          <span lang="id">MIT adalah singkatan dari Multi Intelligence Transforming School. Kami percaya autisme bukanlah penghalang, melainkan cara yang berbeda dalam melihat dunia. Sekolah kami di Jakarta adalah tempat yang aman, terstruktur, dan menyenangkan, tempat anak-anak dengan autisme dapat benar-benar berkembang.</span>
+        </p>
         <div class="motto">
-          <span>Our motto</span>
-          <strong>Giving HOPE &amp; Building FUTURES</strong>
+          <span><span lang="en">Our motto</span><span lang="id">Moto kami</span></span>
+          <strong><span lang="en">Giving HOPE &amp; Building FUTURES</span><span lang="id">Memberi HARAPAN &amp; Membangun MASA DEPAN</span></strong>
         </div>
       </div>
     </div>
 
     <div class="vm">
       <div class="vm-item">
-        <h3>Vision</h3>
-        <p>To enhance the quality of life and build meaningful futures for children with autism through independence, confidence and life skills.</p>
+        <h3><span lang="en">Vision</span><span lang="id">Visi</span></h3>
+        <p>
+          <span lang="en">To enhance the quality of life and build meaningful futures for children with autism through independence, confidence and life skills.</span>
+          <span lang="id">Meningkatkan kualitas hidup dan membangun masa depan yang bermakna bagi anak-anak dengan autisme melalui kemandirian, rasa percaya diri, dan keterampilan hidup.</span>
+        </p>
       </div>
       <div class="vm-item mission">
-        <h3>Mission</h3>
-        <p>To provide a transformational and holistic learning programme for children with autism to cultivate their talents and abilities.</p>
+        <h3><span lang="en">Mission</span><span lang="id">Misi</span></h3>
+        <p>
+          <span lang="en">To provide a transformational and holistic learning programme for children with autism to cultivate their talents and abilities.</span>
+          <span lang="id">Menyediakan program pembelajaran yang transformatif dan holistik bagi anak-anak dengan autisme untuk mengembangkan bakat dan kemampuan mereka.</span>
+        </p>
       </div>
     </div>
 
-    <p class="curriculum">Our curriculum weaves the <strong>mandatory school subjects</strong> (Bahasa Indonesia, English, Math and Science) together with <strong>practical daily life activities</strong> that many autistic children find challenging. From cooking to communication, every lesson has a real-world purpose.</p>
+    <p class="curriculum">
+      <span lang="en">Our curriculum weaves the <strong>mandatory school subjects</strong> (Bahasa Indonesia, English, Math and Science) together with <strong>practical daily life activities</strong> that many autistic children find challenging. From cooking to communication, every lesson has a real-world purpose.</span>
+      <span lang="id">Kurikulum kami memadukan <strong>mata pelajaran wajib</strong> (Bahasa Indonesia, Bahasa Inggris, Matematika, dan IPA) dengan <strong>kegiatan praktis sehari-hari</strong> yang sering menjadi tantangan bagi anak dengan autisme. Dari memasak hingga berkomunikasi, setiap pelajaran punya tujuan nyata dalam kehidupan.</span>
+    </p>
   </div>
 </section>
 
@@ -652,33 +721,51 @@
 <section class="why" id="why-us">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Six reasons parents trust MIT School</h2>
-      <p>What families tell us matters most once their child has settled in.</p>
+      <h2><span lang="en">Six reasons parents trust MIT School</span><span lang="id">Enam alasan orang tua memercayai MIT School</span></h2>
+      <p><span lang="en">What families tell us matters most once their child has settled in.</span><span lang="id">Hal-hal yang menurut para keluarga paling berarti setelah anak mereka merasa nyaman di sekolah.</span></p>
     </div>
     <ul class="why-list">
       <li>
         <span class="badge tone-purple"><svg class="icon"><use href="#i-clipboard"/></svg></span>
-        <div><h3>Individualized education plans</h3><p>Every child's goals are built around their own strengths, pace and interests, not a fixed curriculum.</p></div>
+        <div>
+          <h3><span lang="en">Individualized education plans</span><span lang="id">Rencana pendidikan individual</span></h3>
+          <p><span lang="en">Every child's goals are built around their own strengths, pace and interests, not a fixed curriculum.</span><span lang="id">Tujuan setiap anak disusun berdasarkan kekuatan, kecepatan belajar, dan minatnya sendiri, bukan kurikulum yang kaku.</span></p>
+        </div>
       </li>
       <li>
         <span class="badge tone-orange"><svg class="icon"><use href="#i-users"/></svg></span>
-        <div><h3>Small, focused classes</h3><p>One teacher for every four students means real attention, every single day.</p></div>
+        <div>
+          <h3><span lang="en">Small, focused classes</span><span lang="id">Kelas kecil dan terfokus</span></h3>
+          <p><span lang="en">One teacher for every four students means real attention, every single day.</span><span lang="id">Satu guru untuk setiap empat siswa, sehingga setiap anak mendapat perhatian penuh setiap hari.</span></p>
+        </div>
       </li>
       <li>
         <span class="badge tone-sun"><svg class="icon"><use href="#i-grad"/></svg></span>
-        <div><h3>Autism-trained educators</h3><p>Our teachers and therapists are experienced specifically in autism support, not generalists.</p></div>
+        <div>
+          <h3><span lang="en">Autism-trained educators</span><span lang="id">Pendidik terlatih menangani autisme</span></h3>
+          <p><span lang="en">Our teachers and therapists are experienced specifically in autism support, not generalists.</span><span lang="id">Guru dan terapis kami berpengalaman khusus dalam pendampingan autisme, bukan sekadar pendidik umum.</span></p>
+        </div>
       </li>
       <li>
         <span class="badge tone-purple"><svg class="icon"><use href="#i-coffee"/></svg></span>
-        <div><h3>Real-world skills</h3><p>Cooking, café service and daily routines are taught alongside academics, not as an afterthought.</p></div>
+        <div>
+          <h3><span lang="en">Real-world skills</span><span lang="id">Keterampilan dunia nyata</span></h3>
+          <p><span lang="en">Cooking, café service and daily routines are taught alongside academics, not as an afterthought.</span><span lang="id">Memasak, melayani di kafe, dan rutinitas sehari-hari diajarkan bersama pelajaran akademik, bukan sekadar tambahan.</span></p>
+        </div>
       </li>
       <li>
         <span class="badge tone-orange"><svg class="icon"><use href="#i-heart"/></svg></span>
-        <div><h3>A community, not just a school</h3><p>Family support and public events mean no parent has to navigate this alone.</p></div>
+        <div>
+          <h3><span lang="en">A community, not just a school</span><span lang="id">Sebuah komunitas, bukan sekadar sekolah</span></h3>
+          <p><span lang="en">Family support and public events mean no parent has to navigate this alone.</span><span lang="id">Dukungan keluarga dan kegiatan bersama masyarakat membuat tidak ada orang tua yang harus menjalaninya sendirian.</span></p>
+        </div>
       </li>
       <li>
         <span class="badge tone-sun"><svg class="icon"><use href="#i-sparkle"/></svg></span>
-        <div><h3>Growth you can see</h3><p>The progress families describe, in confidence, communication and independence, speaks for itself.</p></div>
+        <div>
+          <h3><span lang="en">Growth you can see</span><span lang="id">Perkembangan yang terlihat</span></h3>
+          <p><span lang="en">The progress families describe, in confidence, communication and independence, speaks for itself.</span><span lang="id">Kemajuan dalam rasa percaya diri, komunikasi, dan kemandirian yang diceritakan para keluarga menjadi bukti nyata.</span></p>
+        </div>
       </li>
     </ul>
   </div>
@@ -688,45 +775,70 @@
 <section id="programmes">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Learning that truly matters</h2>
-      <p>A curriculum designed around the whole child, combining core academics with practical daily living skills.</p>
+      <h2><span lang="en">Learning that truly matters</span><span lang="id">Pembelajaran yang benar-benar bermakna</span></h2>
+      <p><span lang="en">A curriculum designed around the whole child, combining core academics with practical daily living skills.</span><span lang="id">Kurikulum yang dirancang untuk perkembangan anak secara utuh, memadukan akademik inti dengan keterampilan hidup sehari-hari.</span></p>
     </div>
     <ul class="prog-grid">
       <li class="prog">
         <div class="pair tone-purple" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-book"/></svg></span></div>
-        <h3>Core academic subjects</h3>
-        <p>Foundational subjects adapted to each child's pace and communication style.</p>
-        <ul class="tags"><li>Bahasa Indonesia</li><li>English</li><li>Mathematics</li><li>Science</li></ul>
+        <h3><span lang="en">Core academic subjects</span><span lang="id">Mata pelajaran akademik inti</span></h3>
+        <p><span lang="en">Foundational subjects adapted to each child's pace and communication style.</span><span lang="id">Mata pelajaran dasar yang disesuaikan dengan kecepatan belajar dan cara berkomunikasi setiap anak.</span></p>
+        <ul class="tags">
+          <li>Bahasa Indonesia</li>
+          <li><span lang="en">English</span><span lang="id">Bahasa Inggris</span></li>
+          <li><span lang="en">Mathematics</span><span lang="id">Matematika</span></li>
+          <li><span lang="en">Science</span><span lang="id">IPA</span></li>
+        </ul>
       </li>
       <li class="prog">
         <div class="pair tone-orange" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-chef"/></svg></span></div>
-        <h3>Daily life skills</h3>
-        <p>Hands-on tasks that build real independence: meals, routines, hygiene and social interaction.</p>
-        <ul class="tags"><li>Self-care</li><li>Cooking</li><li>Organisation</li><li>Communication</li></ul>
+        <h3><span lang="en">Daily life skills</span><span lang="id">Keterampilan hidup sehari-hari</span></h3>
+        <p><span lang="en">Hands-on tasks that build real independence: meals, routines, hygiene and social interaction.</span><span lang="id">Kegiatan praktik yang membangun kemandirian nyata: makan, rutinitas, kebersihan diri, dan interaksi sosial.</span></p>
+        <ul class="tags">
+          <li><span lang="en">Self-care</span><span lang="id">Merawat diri</span></li>
+          <li><span lang="en">Cooking</span><span lang="id">Memasak</span></li>
+          <li><span lang="en">Organisation</span><span lang="id">Keteraturan</span></li>
+          <li><span lang="en">Communication</span><span lang="id">Komunikasi</span></li>
+        </ul>
       </li>
       <li class="prog">
         <div class="pair tone-sun" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-briefcase"/></svg></span></div>
-        <h3>Vocational programme</h3>
-        <p>Real work experience in the school café and bakery, building confidence and teamwork.</p>
-        <ul class="tags"><li>Baking</li><li>Café service</li><li>Customer skills</li></ul>
+        <h3><span lang="en">Vocational programme</span><span lang="id">Program vokasional</span></h3>
+        <p><span lang="en">Real work experience in the school café and bakery, building confidence and teamwork.</span><span lang="id">Pengalaman kerja nyata di kafe dan bakery sekolah, membangun rasa percaya diri dan kerja sama tim.</span></p>
+        <ul class="tags">
+          <li><span lang="en">Baking</span><span lang="id">Membuat kue</span></li>
+          <li><span lang="en">Café service</span><span lang="id">Pelayanan kafe</span></li>
+          <li><span lang="en">Customer skills</span><span lang="id">Melayani pelanggan</span></li>
+        </ul>
       </li>
       <li class="prog">
         <div class="pair tone-purple" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-palette"/></svg></span></div>
-        <h3>Creative expression</h3>
-        <p>Art, music and sensory play to help children communicate, regulate and shine.</p>
-        <ul class="tags"><li>Visual arts</li><li>Music</li><li>Sensory play</li></ul>
+        <h3><span lang="en">Creative expression</span><span lang="id">Ekspresi kreatif</span></h3>
+        <p><span lang="en">Art, music and sensory play to help children communicate, regulate and shine.</span><span lang="id">Seni, musik, dan permainan sensori untuk membantu anak berkomunikasi, mengelola emosi, dan bersinar.</span></p>
+        <ul class="tags">
+          <li><span lang="en">Visual arts</span><span lang="id">Seni rupa</span></li>
+          <li><span lang="en">Music</span><span lang="id">Musik</span></li>
+          <li><span lang="en">Sensory play</span><span lang="id">Permainan sensori</span></li>
+        </ul>
       </li>
       <li class="prog">
         <div class="pair tone-orange" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-chat"/></svg></span></div>
-        <h3>Social skills &amp; community</h3>
-        <p>Guided peer interaction that builds friendships, reduces anxiety and fosters belonging.</p>
-        <ul class="tags"><li>Peer groups</li><li>Community events</li><li>Family support</li></ul>
+        <h3><span lang="en">Social skills &amp; community</span><span lang="id">Keterampilan sosial &amp; komunitas</span></h3>
+        <p><span lang="en">Guided peer interaction that builds friendships, reduces anxiety and fosters belonging.</span><span lang="id">Interaksi dengan teman sebaya yang didampingi, untuk membangun persahabatan, mengurangi kecemasan, dan menumbuhkan rasa memiliki.</span></p>
+        <ul class="tags">
+          <li><span lang="en">Peer groups</span><span lang="id">Kelompok teman sebaya</span></li>
+          <li><span lang="en">Community events</span><span lang="id">Kegiatan komunitas</span></li>
+          <li><span lang="en">Family support</span><span lang="id">Dukungan keluarga</span></li>
+        </ul>
       </li>
       <li class="prog">
         <div class="pair tone-sun" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-megaphone"/></svg></span></div>
-        <h3>Autism awareness &amp; advocacy</h3>
-        <p>Partnering with public events to reduce stigma and celebrate neurodiversity in Jakarta.</p>
-        <ul class="tags"><li>Public events</li><li>Campaigns</li></ul>
+        <h3><span lang="en">Autism awareness &amp; advocacy</span><span lang="id">Kepedulian &amp; advokasi autisme</span></h3>
+        <p><span lang="en">Partnering with public events to reduce stigma and celebrate neurodiversity in Jakarta.</span><span lang="id">Bermitra dengan berbagai acara publik untuk mengurangi stigma dan merayakan neurodiversitas di Jakarta.</span></p>
+        <ul class="tags">
+          <li><span lang="en">Public events</span><span lang="id">Acara publik</span></li>
+          <li><span lang="en">Campaigns</span><span lang="id">Kampanye</span></li>
+        </ul>
       </li>
     </ul>
   </div>
@@ -736,32 +848,35 @@
 <section class="bakery" id="bakery">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Made with love, baked with purpose</h2>
-      <p>Our students run a live coffee stand in front of the school and take pre-orders for homemade cookies and baked goods. Every purchase supports their growth and confidence as future workers.</p>
+      <h2><span lang="en">Made with love, baked with purpose</span><span lang="id">Dibuat dengan cinta, dipanggang penuh makna</span></h2>
+      <p>
+        <span lang="en">Our students run a live coffee stand in front of the school and take pre-orders for homemade cookies and baked goods. Every purchase supports their growth and confidence as future workers.</span>
+        <span lang="id">Siswa kami mengelola stan kopi di depan sekolah dan menerima pre-order kue kering serta aneka kue buatan sendiri. Setiap pembelian mendukung perkembangan dan rasa percaya diri mereka sebagai calon pekerja.</span>
+      </p>
     </div>
     <ul class="bake-grid">
       <li class="bake">
-        <div class="photo"><img src="images/bake8.jpeg" alt="Chocolate-dipped crescent cookies with sprinkles, baked by students" loading="lazy"></div>
-        <h3>Pre-order bakes</h3>
-        <p>Freshly baked cookies and treats handmade by our students. Order ahead and pick up. Every bite supports a dream.</p>
+        <div class="photo"><img class="i18n" src="images/bake8.jpeg" alt="Baked treats made by MIT School students" data-id-alt="Kue buatan siswa MIT School" loading="lazy"></div>
+        <h3><span lang="en">Pre-order bakes</span><span lang="id">Pre-order kue</span></h3>
+        <p><span lang="en">Freshly baked cookies and treats handmade by our students. Order ahead and pick up. Every bite supports a dream.</span><span lang="id">Kue kering dan camilan segar buatan tangan siswa kami. Pesan terlebih dahulu, lalu ambil di sekolah. Setiap gigitan mendukung sebuah impian.</span></p>
       </li>
       <li class="bake">
-        <div class="photo"><img src="images/bake6.jpeg" alt="Five students in aprons giving a thumbs up after baking" loading="lazy"></div>
-        <h3>Cooking classes</h3>
-        <p>Cooking and baking with friends from cupcakes to banana bread and even traditional desserts. Perfect for gifts, events and everyday joy.</p>
+        <div class="photo"><img class="i18n" src="images/bake6.jpeg" alt="Students cooking together in a cooking class" data-id-alt="Siswa memasak bersama di kelas memasak" loading="lazy"></div>
+        <h3><span lang="en">Cooking classes</span><span lang="id">Kelas memasak</span></h3>
+        <p><span lang="en">Cooking and baking with friends from cupcakes to banana bread and even traditional desserts. Perfect for gifts, events and everyday joy.</span><span lang="id">Memasak dan membuat kue bersama teman, mulai dari cupcake, banana bread, hingga kue tradisional. Cocok untuk hadiah, acara, dan kebahagiaan sehari-hari.</span></p>
       </li>
       <li class="bake">
-        <div class="photo"><img src="images/coffee-stand.jpg" alt="A student serving a customer at the school coffee booth" loading="lazy" style="object-position: 50% 45%"></div>
-        <h3>Live coffee stand</h3>
-        <p>Visit our school front for a cup brewed by our students. Each interaction is a step toward independence and career readiness.</p>
+        <div class="photo"><img class="i18n" src="images/coffee-stand.jpg" alt="A student serving a customer at the school coffee booth" data-id-alt="Seorang siswa melayani pembeli di stan kopi sekolah" loading="lazy"></div>
+        <h3><span lang="en">Live coffee stand</span><span lang="id">Stan kopi</span></h3>
+        <p><span lang="en">Visit our school front for a cup brewed by our students. Each interaction is a step toward independence and career readiness.</span><span lang="id">Mampir ke depan sekolah kami untuk secangkir kopi yang diseduh oleh siswa. Setiap interaksi adalah langkah menuju kemandirian dan kesiapan kerja.</span></p>
       </li>
     </ul>
     <div class="btn-row">
-      <a href="https://wa.me/6281807811116?text=Hello%2C%20I%27d%20like%20to%20pre-order%20from%20MIT%20School%20Jakarta!" target="_blank" rel="noopener" class="btn btn-sun">
-        <svg class="icon" style="fill:currentColor;stroke:none"><use href="#i-whatsapp"/></svg> Pre-order on WhatsApp
+      <a href="https://wa.me/6281807811116?text=Hello%2C%20I%27d%20like%20to%20pre-order%20from%20MIT%20School%20Jakarta!" data-id-href="https://wa.me/6281807811116?text=Halo%2C%20saya%20ingin%20pre-order%20dari%20MIT%20School%20Jakarta!" target="_blank" rel="noopener" class="btn btn-sun i18n">
+        <svg class="icon" style="fill:currentColor;stroke:none"><use href="#i-whatsapp"/></svg> <span lang="en">Pre-order on WhatsApp</span><span lang="id">Pre-order lewat WhatsApp</span>
       </a>
       <a href="https://www.instagram.com/mitschool.id/" target="_blank" rel="noopener" class="btn btn-light">
-        <svg class="icon"><use href="#i-instagram"/></svg> See our menu on Instagram
+        <svg class="icon"><use href="#i-instagram"/></svg> <span lang="en">See our menu on Instagram</span><span lang="id">Lihat menu kami di Instagram</span>
       </a>
     </div>
   </div>
@@ -771,8 +886,8 @@
 <section id="video">
   <div class="wrap">
     <div class="sec-head center">
-      <h2>A day in the life at MIT School</h2>
-      <p>Watch how our students learn, cook and grow together.</p>
+      <h2><span lang="en">A day in the life at MIT School</span><span lang="id">Sehari di MIT School</span></h2>
+      <p><span lang="en">Watch how our students learn, cook and grow together.</span><span lang="id">Lihat bagaimana siswa kami belajar, memasak, dan tumbuh bersama.</span></p>
     </div>
     <!-- The main video. To use YouTube instead (e.g. for a file over 25 MB), upload it there
          (can be "Unlisted") and put the video ID in data-youtube below.
@@ -781,60 +896,60 @@
       <video id="schoolVideo" playsinline preload="none" poster="videos/posters/exercise.jpg" hidden>
         <source src="videos/exercise.mp4" type="video/mp4">
       </video>
-      <button class="video-poster" type="button" aria-label="Play video: exercise class at MIT School Jakarta">
+      <button class="video-poster i18n" type="button" aria-label="Play video: exercise class at MIT School Jakarta" data-id-aria-label="Putar video: kelas olahraga di MIT School Jakarta">
         <img src="videos/posters/exercise.jpg" alt="" loading="lazy">
         <span class="play"><svg><use href="#i-play"/></svg></span>
-        <span class="poster-label">Watch our exercise class</span>
+        <span class="poster-label"><span lang="en">Watch our exercise class</span><span lang="id">Tonton kelas olahraga kami</span></span>
       </button>
     </div>
 
     <!-- More short clips. To add one: copy a <li> … </li> block, then change the video file,
-         the cover picture (videos/posters/…), the title and the length.                   -->
+         the cover picture (videos/posters/…), both titles and the length.                 -->
     <div class="clips-head">
       <div>
-        <h3>More moments</h3>
-        <p>Short clips from our classrooms, kitchen and outings.</p>
+        <h3><span lang="en">More moments</span><span lang="id">Momen lainnya</span></h3>
+        <p><span lang="en">Short clips from our classrooms, kitchen and outings.</span><span lang="id">Video singkat dari kelas, dapur, dan kegiatan luar sekolah kami.</span></p>
       </div>
       <div class="clips-nav">
-        <button type="button" class="clips-prev" aria-label="Show earlier clips"><svg class="icon"><use href="#i-left"/></svg></button>
-        <button type="button" class="clips-next" aria-label="Show more clips"><svg class="icon"><use href="#i-right"/></svg></button>
+        <button type="button" class="clips-prev i18n" aria-label="Show earlier clips" data-id-aria-label="Tampilkan video sebelumnya"><svg class="icon"><use href="#i-left"/></svg></button>
+        <button type="button" class="clips-next i18n" aria-label="Show more clips" data-id-aria-label="Tampilkan video berikutnya"><svg class="icon"><use href="#i-right"/></svg></button>
       </div>
     </div>
     <ul class="clips" id="clips">
-      <li><button class="clip" type="button" data-src="videos/piano.mp4" data-title="Piano lessons">
+      <li><button class="clip i18n" type="button" data-src="videos/piano.mp4" data-title="Piano lessons" data-id-data-title="Les piano">
         <img src="videos/posters/piano.jpg" alt="" loading="lazy">
         <span class="clip-play" aria-hidden="true"><svg><use href="#i-play"/></svg></span>
-        <span class="clip-info"><span class="clip-title">Piano lessons</span><span class="clip-time"><span class="sr-only">Video, </span>1:18</span></span>
+        <span class="clip-info"><span class="clip-title"><span lang="en">Piano lessons</span><span lang="id">Les piano</span></span><span class="clip-time"><span class="sr-only">Video, </span>1:18</span></span>
       </button></li>
-      <li><button class="clip" type="button" data-src="videos/cooking.mp4" data-title="Cooking class">
+      <li><button class="clip i18n" type="button" data-src="videos/cooking.mp4" data-title="Cooking class" data-id-data-title="Kelas memasak">
         <img src="videos/posters/cooking.jpg" alt="" loading="lazy">
         <span class="clip-play" aria-hidden="true"><svg><use href="#i-play"/></svg></span>
-        <span class="clip-info"><span class="clip-title">Cooking class</span><span class="clip-time"><span class="sr-only">Video, </span>1:29</span></span>
+        <span class="clip-info"><span class="clip-title"><span lang="en">Cooking class</span><span lang="id">Kelas memasak</span></span><span class="clip-time"><span class="sr-only">Video, </span>1:29</span></span>
       </button></li>
-      <li><button class="clip" type="button" data-src="videos/park-games.mp4" data-title="Games in the park">
+      <li><button class="clip i18n" type="button" data-src="videos/park-games.mp4" data-title="Games in the park" data-id-data-title="Bermain di taman">
         <img src="videos/posters/park-games.jpg" alt="" loading="lazy">
         <span class="clip-play" aria-hidden="true"><svg><use href="#i-play"/></svg></span>
-        <span class="clip-info"><span class="clip-title">Games in the park</span><span class="clip-time"><span class="sr-only">Video, </span>1:29</span></span>
+        <span class="clip-info"><span class="clip-title"><span lang="en">Games in the park</span><span lang="id">Bermain di taman</span></span><span class="clip-time"><span class="sr-only">Video, </span>1:29</span></span>
       </button></li>
-      <li><button class="clip" type="button" data-src="videos/movement.mp4" data-title="Movement class">
+      <li><button class="clip i18n" type="button" data-src="videos/movement.mp4" data-title="Movement class" data-id-data-title="Kelas gerak">
         <img src="videos/posters/movement.jpg" alt="" loading="lazy">
         <span class="clip-play" aria-hidden="true"><svg><use href="#i-play"/></svg></span>
-        <span class="clip-info"><span class="clip-title">Movement class</span><span class="clip-time"><span class="sr-only">Video, </span>0:21</span></span>
+        <span class="clip-info"><span class="clip-title"><span lang="en">Movement class</span><span lang="id">Kelas gerak</span></span><span class="clip-time"><span class="sr-only">Video, </span>0:21</span></span>
       </button></li>
-      <li><button class="clip" type="button" data-src="videos/computer-class.mp4" data-title="Computer class">
+      <li><button class="clip i18n" type="button" data-src="videos/computer-class.mp4" data-title="Computer class" data-id-data-title="Kelas komputer">
         <img src="videos/posters/computer-class.jpg" alt="" loading="lazy">
         <span class="clip-play" aria-hidden="true"><svg><use href="#i-play"/></svg></span>
-        <span class="clip-info"><span class="clip-title">Computer class</span><span class="clip-time"><span class="sr-only">Video, </span>1:12</span></span>
+        <span class="clip-info"><span class="clip-title"><span lang="en">Computer class</span><span lang="id">Kelas komputer</span></span><span class="clip-time"><span class="sr-only">Video, </span>1:12</span></span>
       </button></li>
-      <li><button class="clip" type="button" data-src="videos/kitchen-prep.mp4" data-title="Kitchen prep">
+      <li><button class="clip i18n" type="button" data-src="videos/kitchen-prep.mp4" data-title="Kitchen prep" data-id-data-title="Persiapan di dapur">
         <img src="videos/posters/kitchen-prep.jpg" alt="" loading="lazy">
         <span class="clip-play" aria-hidden="true"><svg><use href="#i-play"/></svg></span>
-        <span class="clip-info"><span class="clip-title">Kitchen prep</span><span class="clip-time"><span class="sr-only">Video, </span>0:11</span></span>
+        <span class="clip-info"><span class="clip-title"><span lang="en">Kitchen prep</span><span lang="id">Persiapan di dapur</span></span><span class="clip-time"><span class="sr-only">Video, </span>0:11</span></span>
       </button></li>
-      <li><button class="clip" type="button" data-src="videos/at-the-stove.mp4" data-title="At the stove">
+      <li><button class="clip i18n" type="button" data-src="videos/at-the-stove.mp4" data-title="At the stove" data-id-data-title="Memasak di kompor">
         <img src="videos/posters/at-the-stove.jpg" alt="" loading="lazy">
         <span class="clip-play" aria-hidden="true"><svg><use href="#i-play"/></svg></span>
-        <span class="clip-info"><span class="clip-title">At the stove</span><span class="clip-time"><span class="sr-only">Video, </span>0:06</span></span>
+        <span class="clip-info"><span class="clip-title"><span lang="en">At the stove</span><span lang="id">Memasak di kompor</span></span><span class="clip-time"><span class="sr-only">Video, </span>0:06</span></span>
       </button></li>
     </ul>
   </div>
@@ -844,32 +959,35 @@
 <section class="events" id="events">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Spreading hope beyond our walls</h2>
-      <p>MIT School partners with public events to champion autism awareness, celebrate neurodiversity and build a more inclusive Jakarta.</p>
+      <h2><span lang="en">Spreading hope beyond our walls</span><span lang="id">Menebar harapan di luar sekolah</span></h2>
+      <p>
+        <span lang="en">MIT School partners with public events to champion autism awareness, celebrate neurodiversity and build a more inclusive Jakarta.</span>
+        <span lang="id">MIT School bermitra dengan berbagai acara publik untuk memperjuangkan kepedulian terhadap autisme, merayakan neurodiversitas, dan membangun Jakarta yang lebih inklusif.</span>
+      </p>
     </div>
     <ul class="event-list">
       <li class="event">
         <div class="pair tone-purple" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-heart"/></svg></span></div>
         <div>
-          <span class="event-tag">Every year</span>
-          <h3>Autism Awareness Day</h3>
-          <p>We join public gatherings to educate communities, share our students' stories and light up Jakarta in blue and gold.</p>
+          <span class="event-tag"><span lang="en">Every year</span><span lang="id">Setiap tahun</span></span>
+          <h3><span lang="en">Autism Awareness Day</span><span lang="id">Hari Peduli Autisme</span></h3>
+          <p><span lang="en">We join public gatherings to educate communities, share our students' stories and light up Jakarta in blue and gold.</span><span lang="id">Kami ikut serta dalam kegiatan publik untuk mengedukasi masyarakat, berbagi kisah siswa kami, dan menerangi Jakarta dengan warna biru dan emas.</span></p>
         </div>
       </li>
       <li class="event">
         <div class="pair tone-orange" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-store"/></svg></span></div>
         <div>
-          <span class="event-tag">Student-led</span>
-          <h3>Community pop-up markets</h3>
-          <p>Our students showcase and sell their baked goods at local markets, building real business skills while the community cheers them on.</p>
+          <span class="event-tag"><span lang="en">Student-led</span><span lang="id">Dijalankan siswa</span></span>
+          <h3><span lang="en">Community pop-up markets</span><span lang="id">Bazar komunitas</span></h3>
+          <p><span lang="en">Our students showcase and sell their baked goods at local markets, building real business skills while the community cheers them on.</span><span lang="id">Siswa kami memamerkan dan menjual kue buatan mereka di bazar lokal, melatih keterampilan usaha nyata dengan dukungan masyarakat.</span></p>
         </div>
       </li>
       <li class="event">
         <div class="pair tone-sun" aria-hidden="true"><span class="disc"><svg class="icon"><use href="#i-users"/></svg></span></div>
         <div>
-          <span class="event-tag">With partners</span>
-          <h3>Partnership collaborations</h3>
-          <p>Working with NGOs, local businesses and schools to host inclusive workshops and events that open minds and open doors for our students.</p>
+          <span class="event-tag"><span lang="en">With partners</span><span lang="id">Bersama mitra</span></span>
+          <h3><span lang="en">Partnership collaborations</span><span lang="id">Kolaborasi kemitraan</span></h3>
+          <p><span lang="en">Working with NGOs, local businesses and schools to host inclusive workshops and events that open minds and open doors for our students.</span><span lang="id">Bekerja sama dengan LSM, usaha lokal, dan sekolah untuk mengadakan lokakarya dan acara inklusif yang membuka wawasan sekaligus membuka peluang bagi siswa kami.</span></p>
         </div>
       </li>
     </ul>
@@ -881,29 +999,38 @@
 <section id="stories">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Real hope, real change</h2>
-      <p>Hear from families whose lives have been changed by MIT School Jakarta.</p>
+      <h2><span lang="en">Real hope, real change</span><span lang="id">Harapan nyata, perubahan nyata</span></h2>
+      <p><span lang="en">Hear from families whose lives have been changed by MIT School Jakarta.</span><span lang="id">Dengarkan cerita keluarga yang hidupnya berubah bersama MIT School Jakarta.</span></p>
     </div>
     <ul class="quotes">
       <li>
         <figure class="quote">
           <span class="quote-mark" aria-hidden="true">“</span>
-          <blockquote>Before MIT School, my son couldn't make eye contact with anyone. Now he serves coffee to strangers with a huge smile. This school gave him back his confidence.</blockquote>
-          <figcaption><span class="avatar" aria-hidden="true">DS</span><span><span class="quote-name">Dewi Santoso</span><br><span class="quote-role">Parent of a 14-year-old</span></span></figcaption>
+          <blockquote>
+            <span lang="en">Before MIT School, my son couldn't make eye contact with anyone. Now he serves coffee to strangers with a huge smile. This school gave him back his confidence.</span>
+            <span lang="id">Sebelum di MIT School, anak laki-laki saya tidak bisa menatap mata siapa pun. Sekarang ia menyajikan kopi untuk orang yang belum ia kenal dengan senyum lebar. Sekolah ini mengembalikan rasa percaya dirinya.</span>
+          </blockquote>
+          <figcaption><span class="avatar" aria-hidden="true">DS</span><span><span class="quote-name">Dewi Santoso</span><br><span class="quote-role"><span lang="en">Parent of a 14-year-old</span><span lang="id">Orang tua dari anak usia 14 tahun</span></span></span></figcaption>
         </figure>
       </li>
       <li>
         <figure class="quote">
           <span class="quote-mark" aria-hidden="true">“</span>
-          <blockquote>The teachers here truly understand autism. They don't push, they guide. My daughter now reads simple sentences in English and helps me bake at home every weekend!</blockquote>
-          <figcaption><span class="avatar" aria-hidden="true">RH</span><span><span class="quote-name">Rini Handayani</span><br><span class="quote-role">Parent of a 9-year-old</span></span></figcaption>
+          <blockquote>
+            <span lang="en">The teachers here truly understand autism. They don't push, they guide. My daughter now reads simple sentences in English and helps me bake at home every weekend!</span>
+            <span lang="id">Para guru di sini benar-benar memahami autisme. Mereka tidak memaksa, tetapi membimbing. Sekarang putri saya bisa membaca kalimat sederhana dalam bahasa Inggris dan membantu saya membuat kue di rumah setiap akhir pekan!</span>
+          </blockquote>
+          <figcaption><span class="avatar" aria-hidden="true">RH</span><span><span class="quote-name">Rini Handayani</span><br><span class="quote-role"><span lang="en">Parent of a 9-year-old</span><span lang="id">Orang tua dari anak usia 9 tahun</span></span></span></figcaption>
         </figure>
       </li>
       <li>
         <figure class="quote">
           <span class="quote-mark" aria-hidden="true">“</span>
-          <blockquote>I was afraid no school would accept my child. MIT School not only accepted him, they celebrate him. The community events have helped our whole family feel less alone.</blockquote>
-          <figcaption><span class="avatar" aria-hidden="true">BW</span><span><span class="quote-name">Budi Wibowo</span><br><span class="quote-role">Parent of a 12-year-old</span></span></figcaption>
+          <blockquote>
+            <span lang="en">I was afraid no school would accept my child. MIT School not only accepted him, they celebrate him. The community events have helped our whole family feel less alone.</span>
+            <span lang="id">Saya sempat takut tidak ada sekolah yang mau menerima anak saya. MIT School bukan hanya menerimanya, tetapi juga menghargainya. Kegiatan komunitasnya membuat seluruh keluarga kami tidak lagi merasa sendirian.</span>
+          </blockquote>
+          <figcaption><span class="avatar" aria-hidden="true">BW</span><span><span class="quote-name">Budi Wibowo</span><br><span class="quote-role"><span lang="en">Parent of a 12-year-old</span><span lang="id">Orang tua dari anak usia 12 tahun</span></span></span></figcaption>
         </figure>
       </li>
     </ul>
@@ -916,17 +1043,17 @@
     <div class="ig-profile">
       <span class="ig-avatar" aria-hidden="true"><span><svg viewBox="0 0 52 52"><use href="#i-logo"/></svg></span></span>
       <div class="ig-meta">
-        <h2>Follow our journey</h2>
-        <p><span class="handle">@mitschool.id</span><br>Class moments, fresh bakes and student milestones.</p>
+        <h2><span lang="en">Follow our journey</span><span lang="id">Ikuti perjalanan kami</span></h2>
+        <p><span class="handle">@mitschool.id</span><br><span lang="en">Class moments, fresh bakes and student milestones.</span><span lang="id">Momen di kelas, kue yang baru matang, dan pencapaian siswa.</span></p>
       </div>
       <a href="https://www.instagram.com/mitschool.id/" target="_blank" rel="noopener" class="btn btn-primary">
-        <svg class="icon"><use href="#i-instagram"/></svg> Follow on Instagram
+        <svg class="icon"><use href="#i-instagram"/></svg> <span lang="en">Follow on Instagram</span><span lang="id">Ikuti di Instagram</span>
       </a>
     </div>
 
     <!-- The posts are filled in automatically. To choose them, see INSTAGRAM near the bottom of this file. -->
-    <ul class="ig-grid" id="igGrid" aria-label="Latest posts from @mitschool.id" hidden></ul>
-    <p class="ig-note" id="igNote" hidden>Tap any photo to see the full post on Instagram.</p>
+    <ul class="ig-grid i18n" id="igGrid" aria-label="Latest posts from @mitschool.id" data-id-aria-label="Postingan terbaru dari @mitschool.id" hidden></ul>
+    <p class="ig-note" id="igNote" hidden><span lang="en">Tap any photo to see the full post on Instagram.</span><span lang="id">Ketuk foto untuk melihat postingan lengkapnya di Instagram.</span></p>
   </div>
 </section>
 
@@ -935,49 +1062,61 @@
   <div class="wrap enroll-grid">
     <div>
       <div class="sec-head">
-        <h2>Take the first step together</h2>
-        <p>We welcome children with autism and related special needs. Our team will guide your family every step of the way.</p>
+        <h2><span lang="en">Take the first step together</span><span lang="id">Ambil langkah pertama bersama kami</span></h2>
+        <p><span lang="en">We welcome children with autism and related special needs. Our team will guide your family every step of the way.</span><span lang="id">Kami menyambut anak-anak dengan autisme dan kebutuhan khusus terkait. Tim kami akan mendampingi keluarga Anda di setiap langkah.</span></p>
       </div>
       <ol class="steps">
-        <li><div><h3>Send your enquiry</h3><p>Fill in the form and tell us a little about your child and your goals for them.</p></div></li>
-        <li><div><h3>Consultation meeting</h3><p>We'll arrange a warm conversation with our team to understand your child's needs and learning style.</p></div></li>
-        <li><div><h3>Trial visit</h3><p>Your child visits the school, meets the teachers and spends a day in our environment.</p></div></li>
-        <li><div><h3>Welcome to MIT School</h3><p>Once confirmed, your child officially joins our family with a personalised learning plan prepared just for them.</p></div></li>
+        <li><div>
+          <h3><span lang="en">Send your enquiry</span><span lang="id">Kirim pertanyaan Anda</span></h3>
+          <p><span lang="en">Fill in the form and tell us a little about your child and your goals for them.</span><span lang="id">Isi formulir dan ceritakan sedikit tentang anak Anda serta harapan Anda untuknya.</span></p>
+        </div></li>
+        <li><div>
+          <h3><span lang="en">Consultation meeting</span><span lang="id">Pertemuan konsultasi</span></h3>
+          <p><span lang="en">We'll arrange a warm conversation with our team to understand your child's needs and learning style.</span><span lang="id">Kami akan mengatur pertemuan dengan tim kami untuk memahami kebutuhan dan gaya belajar anak Anda.</span></p>
+        </div></li>
+        <li><div>
+          <h3><span lang="en">Trial visit</span><span lang="id">Kunjungan percobaan</span></h3>
+          <p><span lang="en">Your child visits the school, meets the teachers and spends a day in our environment.</span><span lang="id">Anak Anda berkunjung ke sekolah, bertemu para guru, dan menghabiskan satu hari di lingkungan kami.</span></p>
+        </div></li>
+        <li><div>
+          <h3><span lang="en">Welcome to MIT School</span><span lang="id">Selamat datang di MIT School</span></h3>
+          <p><span lang="en">Once confirmed, your child officially joins our family with a personalised learning plan prepared just for them.</span><span lang="id">Setelah terkonfirmasi, anak Anda resmi bergabung dengan keluarga kami, dengan rencana belajar pribadi yang disiapkan khusus untuknya.</span></p>
+        </div></li>
       </ol>
     </div>
 
     <form class="form-card" id="enquiryForm">
-      <h3>Enquire now</h3>
-      <p>Your details open in WhatsApp as a ready-to-send message.</p>
+      <h3><span lang="en">Enquire now</span><span lang="id">Tanyakan sekarang</span></h3>
+      <p><span lang="en">Your details open in WhatsApp as a ready-to-send message.</span><span lang="id">Data Anda akan terbuka di WhatsApp sebagai pesan yang siap dikirim.</span></p>
       <div class="field">
-        <label for="parentName">Parent / guardian name</label>
-        <input type="text" id="parentName" name="parentName" autocomplete="name" placeholder="Your full name" required>
+        <label for="parentName"><span lang="en">Parent / guardian name</span><span lang="id">Nama orang tua / wali</span></label>
+        <input class="i18n" type="text" id="parentName" name="parentName" autocomplete="name" placeholder="Your full name" data-id-placeholder="Nama lengkap Anda" required>
       </div>
       <div class="field">
-        <label for="childName">Child's name</label>
-        <input type="text" id="childName" name="childName" placeholder="Child's name" required>
+        <label for="childName"><span lang="en">Child's name</span><span lang="id">Nama anak</span></label>
+        <input class="i18n" type="text" id="childName" name="childName" placeholder="Child's name" data-id-placeholder="Nama anak" required>
       </div>
       <div class="field">
-        <label for="childAge">Child's age</label>
+        <label for="childAge"><span lang="en">Child's age</span><span lang="id">Usia anak</span></label>
         <select id="childAge" name="childAge">
-          <option value="">Select age range</option>
-          <option>3 – 6 years</option>
-          <option>7 – 10 years</option>
-          <option>11 – 14 years</option>
-          <option>15 – 18 years</option>
-          <option>18+ years</option>
+          <option class="i18n" value="" data-id-text="Pilih rentang usia">Select age range</option>
+          <option class="i18n" data-id-text="3 – 6 tahun">3 – 6 years</option>
+          <option class="i18n" data-id-text="7 – 10 tahun">7 – 10 years</option>
+          <option class="i18n" data-id-text="11 – 14 tahun">11 – 14 years</option>
+          <option class="i18n" data-id-text="15 – 18 tahun">15 – 18 years</option>
+          <option class="i18n" data-id-text="18+ tahun">18+ years</option>
         </select>
       </div>
       <div class="field">
-        <label for="waNum">WhatsApp number</label>
-        <input type="tel" id="waNum" name="waNum" autocomplete="tel" placeholder="e.g. 0812 3456 7890" required>
+        <label for="waNum"><span lang="en">WhatsApp number</span><span lang="id">Nomor WhatsApp</span></label>
+        <input class="i18n" type="tel" id="waNum" name="waNum" autocomplete="tel" placeholder="e.g. 0812 3456 7890" data-id-placeholder="contoh: 0812 3456 7890" required>
       </div>
       <div class="field">
-        <label for="childInfo">Tell us about your child <span class="opt">(optional)</span></label>
-        <textarea id="childInfo" name="childInfo" placeholder="Your child's needs, interests or any questions"></textarea>
+        <label for="childInfo"><span lang="en">Tell us about your child <span class="opt">(optional)</span></span><span lang="id">Ceritakan tentang anak Anda <span class="opt">(opsional)</span></span></label>
+        <textarea class="i18n" id="childInfo" name="childInfo" placeholder="Your child's needs, interests or any questions" data-id-placeholder="Kebutuhan dan minat anak Anda, atau pertanyaan apa pun"></textarea>
       </div>
       <button type="submit" class="btn btn-primary">
-        <svg class="icon" style="fill:currentColor;stroke:none"><use href="#i-whatsapp"/></svg> Send enquiry on WhatsApp
+        <svg class="icon" style="fill:currentColor;stroke:none"><use href="#i-whatsapp"/></svg> <span lang="en">Send enquiry on WhatsApp</span><span lang="id">Kirim lewat WhatsApp</span>
       </button>
     </form>
   </div>
@@ -992,30 +1131,30 @@
       <div class="footer-brand">
         <svg viewBox="0 0 52 52" width="56" height="56" aria-hidden="true"><use href="#i-logo"/></svg>
         <div class="brand-name">MIT School Jakarta</div>
-        <p>Multi Intelligence Transforming School, giving hope and a bright future to children with autism.</p>
+        <p><span lang="en">Multi Intelligence Transforming School, giving hope and a bright future to children with autism.</span><span lang="id">Multi Intelligence Transforming School, memberi harapan dan masa depan cerah bagi anak-anak dengan autisme.</span></p>
       </div>
       <div>
-        <h4>Explore</h4>
+        <h4><span lang="en">Explore</span><span lang="id">Jelajahi</span></h4>
         <ul>
-          <li><a href="#about">About us</a></li>
-          <li><a href="#programmes">Programmes</a></li>
-          <li><a href="#stories">Parent stories</a></li>
-          <li><a href="#enrollment">Enrollment</a></li>
+          <li><a href="#about"><span lang="en">About us</span><span lang="id">Tentang kami</span></a></li>
+          <li><a href="#programmes"><span lang="en">Programmes</span><span lang="id">Program</span></a></li>
+          <li><a href="#stories"><span lang="en">Parent stories</span><span lang="id">Cerita orang tua</span></a></li>
+          <li><a href="#enrollment"><span lang="en">Enrollment</span><span lang="id">Pendaftaran</span></a></li>
         </ul>
       </div>
       <div>
-        <h4>Our services</h4>
+        <h4><span lang="en">Our services</span><span lang="id">Layanan kami</span></h4>
         <ul>
-          <li><a href="#bakery">Cookie pre-orders</a></li>
-          <li><a href="#bakery">Baked goods</a></li>
-          <li><a href="#bakery">Coffee stand</a></li>
-          <li><a href="#events">Community events</a></li>
+          <li><a href="#bakery"><span lang="en">Pre-order bakes</span><span lang="id">Pre-order kue</span></a></li>
+          <li><a href="#bakery"><span lang="en">Cooking classes</span><span lang="id">Kelas memasak</span></a></li>
+          <li><a href="#bakery"><span lang="en">Coffee stand</span><span lang="id">Stan kopi</span></a></li>
+          <li><a href="#events"><span lang="en">Community events</span><span lang="id">Kegiatan komunitas</span></a></li>
         </ul>
       </div>
       <div>
-        <h4>Get in touch</h4>
+        <h4><span lang="en">Get in touch</span><span lang="id">Hubungi kami</span></h4>
         <ul class="contact">
-          <li><svg class="icon" style="fill:currentColor;stroke:none"><use href="#i-whatsapp"/></svg><a href="https://wa.me/6281807811116?text=Hello%20MIT%20School!" target="_blank" rel="noopener">+62 818 0781 1116</a></li>
+          <li><svg class="icon" style="fill:currentColor;stroke:none"><use href="#i-whatsapp"/></svg><a class="i18n" href="https://wa.me/6281807811116?text=Hello%20MIT%20School!" data-id-href="https://wa.me/6281807811116?text=Halo%20MIT%20School!" target="_blank" rel="noopener">+62 818 0781 1116</a></li>
           <li><svg class="icon"><use href="#i-phone"/></svg><a href="tel:+622145840422">+62 21 4584 0422</a></li>
           <li><svg class="icon"><use href="#i-instagram"/></svg><a href="https://www.instagram.com/mitschool.id/" target="_blank" rel="noopener">@mitschool.id</a></li>
           <li><svg class="icon"><use href="#i-pin"/></svg><span>Jakarta, Indonesia</span></li>
@@ -1023,21 +1162,21 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© <span id="year">2026</span> MIT School Jakarta. All rights reserved.</span>
+      <span>© <span id="year">2026</span> MIT School Jakarta. <span lang="en">All rights reserved.</span><span lang="id">Hak cipta dilindungi.</span></span>
       <span>#GivingHopeToAutism</span>
     </div>
   </div>
 </footer>
 
 <!-- WhatsApp chat button -->
-<p class="wa-hint" id="waHint" aria-hidden="true">Questions? Chat with us on WhatsApp.</p>
-<a href="https://wa.me/6281807811116?text=Hello%2C%20I%27d%20like%20to%20know%20more%20about%20MIT%20School%20Jakarta!" target="_blank" rel="noopener" class="wa-float" aria-label="Chat with MIT School on WhatsApp">
+<p class="wa-hint" id="waHint" aria-hidden="true"><span lang="en">Questions? Chat with us on WhatsApp.</span><span lang="id">Ada pertanyaan? Chat kami di WhatsApp.</span></p>
+<a href="https://wa.me/6281807811116?text=Hello%2C%20I%27d%20like%20to%20know%20more%20about%20MIT%20School%20Jakarta!" data-id-href="https://wa.me/6281807811116?text=Halo%2C%20saya%20ingin%20tahu%20lebih%20lanjut%20tentang%20MIT%20School%20Jakarta!" target="_blank" rel="noopener" class="wa-float i18n" aria-label="Chat with MIT School on WhatsApp" data-id-aria-label="Chat dengan MIT School di WhatsApp">
   <svg aria-hidden="true"><use href="#i-whatsapp"/></svg>
 </a>
 
 <!-- Video player for the "More moments" clips -->
 <div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
-  <button class="player-close" type="button" aria-label="Close video"><svg class="icon"><use href="#i-x"/></svg></button>
+  <button class="player-close i18n" type="button" aria-label="Close video" data-id-aria-label="Tutup video"><svg class="icon"><use href="#i-x"/></svg></button>
   <div class="player-box">
     <video controls playsinline preload="auto"></video>
     <p class="player-title" id="playerTitle"></p>
@@ -1047,10 +1186,10 @@
 <!-- Camp pop-up. Change the poster image and the dates in CAMP_POPUP (bottom of the page). -->
 <div class="camp" id="camp" role="dialog" aria-modal="true" aria-label="Summer Life Skills Camp 2026">
   <div class="camp-box">
-    <button class="camp-close" type="button" aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button>
-    <img src="images/summer-camp-2026.jpg" alt="Summer Life Skills Camp 2026 for children with autism. Batch 1: 22–26 June 2026. Batch 2: 29 June – 3 July 2026. Rp 1,250,000 per batch. Activities: cooking and baking, community shopping, money skills, creative art and craft, social interaction.">
+    <button class="camp-close i18n" type="button" aria-label="Close" data-id-aria-label="Tutup"><svg class="icon"><use href="#i-x"/></svg></button>
+    <img class="i18n" src="images/summer-camp-2026.jpg" alt="Summer Life Skills Camp 2026 for children with autism. Batch 1: 22–26 June 2026. Batch 2: 29 June – 3 July 2026. Rp 1,250,000 per batch. Activities: cooking and baking, community shopping, money skills, creative art and craft, social interaction." data-id-alt="Summer Life Skills Camp 2026 untuk anak dengan autisme. Batch 1: 22–26 Juni 2026. Batch 2: 29 Juni – 3 Juli 2026. Rp 1.250.000 per batch. Kegiatan: memasak dan membuat kue, berbelanja, keterampilan mengelola uang, seni dan kerajinan, serta interaksi sosial.">
     <div class="camp-actions">
-      <button type="button" class="btn btn-primary" id="campSignup">Sign up now, limited seats</button>
+      <button type="button" class="btn btn-primary" id="campSignup"><span lang="en">Sign up now, limited seats</span><span lang="id">Daftar sekarang, tempat terbatas</span></button>
     </div>
   </div>
 </div>
@@ -1062,7 +1201,10 @@
   var CAMP_POPUP = {
     enabled: true,
     showUntil: '2026-07-03',   // the pop-up stops appearing after this date (YYYY-MM-DD)
-    enquiryNote: "I'm interested in the Summer Life Skills Camp."
+    enquiryNote: {
+      en: "I'm interested in the Summer Life Skills Camp.",
+      id: "Saya tertarik dengan Summer Life Skills Camp."
+    }
   };
   // Tip: add ?camp to the end of your web address to preview the pop-up any time.
 
@@ -1087,6 +1229,64 @@
     ]
   };
   var INSTAGRAM_PROFILE = 'https://www.instagram.com/mitschool.id/';
+
+  /* ─── Language: English / Bahasa Indonesia ─── */
+  var TEXT = {
+    en: {
+      pageTitle: 'MIT School Jakarta | Autism-focused school for ages 4–18',
+      openMenu: 'Open menu', closeMenu: 'Close menu',
+      msgHello: 'Hello MIT School Jakarta!', msgTitle: 'Enrollment enquiry',
+      msgParent: 'Parent / guardian: ', msgChild: 'Child: ', msgAge: 'Age group: ',
+      msgWhatsApp: 'WhatsApp: ', msgAbout: 'About my child: '
+    },
+    id: {
+      pageTitle: 'MIT School Jakarta | Sekolah khusus autisme untuk usia 4–18 tahun',
+      openMenu: 'Buka menu', closeMenu: 'Tutup menu',
+      msgHello: 'Halo MIT School Jakarta!', msgTitle: 'Pertanyaan pendaftaran',
+      msgParent: 'Orang tua / wali: ', msgChild: 'Nama anak: ', msgAge: 'Kelompok usia: ',
+      msgWhatsApp: 'WhatsApp: ', msgAbout: 'Tentang anak saya: '
+    }
+  };
+  function currentLang() { return document.documentElement.lang === 'id' ? 'id' : 'en'; }
+  function t(key) { return TEXT[currentLang()][key]; }
+
+  // Elements with class "i18n" swap attributes: data-id-alt="…" replaces alt in Bahasa Indonesia,
+  // data-id-placeholder, data-id-aria-label, data-id-href … work the same way; data-id-text swaps the text.
+  function applyLanguage(lang, chosenByVisitor) {
+    var root = document.documentElement;
+    root.lang = lang;
+    document.title = t('pageTitle');
+    document.querySelectorAll('.i18n').forEach(function (el) {
+      Array.prototype.slice.call(el.attributes).forEach(function (attr) {
+        if (attr.name.indexOf('data-id-') !== 0) return;
+        var name = attr.name.slice(8);
+        var saved = 'data-en-' + name;
+        if (!el.hasAttribute(saved)) {
+          el.setAttribute(saved, name === 'text' ? el.textContent : (el.getAttribute(name) || ''));
+        }
+        var value = lang === 'id' ? attr.value : el.getAttribute(saved);
+        if (name === 'text') el.textContent = value; else el.setAttribute(name, value);
+      });
+    });
+    document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.setLang === lang));
+    });
+    var mb = document.querySelector('.menu-btn');
+    var open = document.getElementById('nav-links').classList.contains('open');
+    mb.setAttribute('aria-label', open ? t('closeMenu') : t('openMenu'));
+    if (chosenByVisitor) {
+      try { localStorage.setItem('mitLang', lang); } catch (e) {}
+      try {
+        var url = new URL(location.href);
+        url.searchParams.set('lang', lang);
+        history.replaceState(null, '', url);
+      } catch (e) {}
+    }
+  }
+  document.querySelectorAll('[data-set-lang]').forEach(function (b) {
+    b.addEventListener('click', function () { applyLanguage(b.dataset.setLang, true); });
+  });
+  applyLanguage(currentLang(), false);
 
   /* Puzzle intro */
   (function () {
@@ -1215,7 +1415,7 @@
   function setMenu(open) {
     navLinks.classList.toggle('open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
-    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menuBtn.setAttribute('aria-label', open ? t('closeMenu') : t('openMenu'));
   }
   menuBtn.addEventListener('click', function () { setMenu(!navLinks.classList.contains('open')); });
   navLinks.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
@@ -1297,7 +1497,8 @@
       return Promise.all(INSTAGRAM.posts.slice(0, MAX_POSTS).map(function (p, i) {
         return findPhoto(p.photo).then(function (src) {
           return src && { link: cleanLink(p.link), src: src, type: 'IMAGE',
-                          alt: 'MIT School Jakarta Instagram post ' + (i + 1) };
+                          altEn: 'MIT School Jakarta Instagram post ' + (i + 1),
+                          altId: 'Postingan Instagram MIT School Jakarta ' + (i + 1) };
         });
       })).then(function (list) { return { posts: list.filter(Boolean) }; });
     }
@@ -1311,7 +1512,8 @@
         var src = (pick && pick.mediaUrl) || (p.mediaType === 'VIDEO' ? p.thumbnailUrl : p.mediaUrl);
         var words = shorten(p.altText || p.prunedCaption || p.caption, 140);
         return src && { link: cleanLink(p.permalink), src: src, type: p.mediaType,
-                        alt: words ? 'Instagram post: ' + words : 'MIT School Jakarta Instagram post' };
+                        altEn: words ? 'Instagram post: ' + words : 'MIT School Jakarta Instagram post',
+                        altId: words ? 'Postingan Instagram: ' + words : 'Postingan Instagram MIT School Jakarta' };
       }).filter(Boolean).slice(0, MAX_POSTS);
       return { posts: posts, avatar: data && data.profilePictureUrl };
     }
@@ -1342,7 +1544,11 @@
       a.target = '_blank';
       a.rel = 'noopener';
       var img = document.createElement('img');
-      img.alt = p.alt;
+      var altEn = p.altEn || p.alt || '', altId = p.altId || altEn;
+      img.className = 'i18n';
+      img.setAttribute('data-en-alt', altEn);
+      img.setAttribute('data-id-alt', altId);
+      img.alt = currentLang() === 'id' ? altId : altEn;
       img.loading = 'lazy';
       img.decoding = 'async';
       img.onload = function () { img.classList.add('loaded'); };
@@ -1354,7 +1560,7 @@
       } else if (p.type === 'CAROUSEL_ALBUM') {
         a.insertAdjacentHTML('beforeend', '<span class="ig-mark" aria-hidden="true"><svg class="icon"><use href="#i-carousel"/></svg></span>');
       }
-      a.insertAdjacentHTML('beforeend', '<span class="ig-hover" aria-hidden="true"><svg class="icon"><use href="#i-instagram"/></svg>View on Instagram</span>');
+      a.insertAdjacentHTML('beforeend', '<span class="ig-hover" aria-hidden="true"><svg class="icon"><use href="#i-instagram"/></svg><span lang="en">View on Instagram</span><span lang="id">Lihat di Instagram</span></span>');
       li.appendChild(a);
       return li;
     }
@@ -1414,6 +1620,15 @@
     });
   }
 
+  /* Bakery photos: use each photo, blurred, to fill the space around it */
+  document.querySelectorAll('.bake .photo img').forEach(function (img) {
+    function fill() {
+      if (img.naturalWidth) img.parentNode.style.setProperty('--photo', 'url("' + img.currentSrc + '")');
+    }
+    if (img.complete) fill();
+    img.addEventListener('load', fill);
+  });
+
   /* More moments: arrows and the clip player */
   (function () {
     var strip = document.getElementById('clips');
@@ -1471,15 +1686,15 @@
     e.preventDefault();
     var f = form.elements;
     var msg = [
-      'Hello MIT School Jakarta!',
+      t('msgHello'),
       '',
-      'Enrollment enquiry',
-      'Parent / guardian: ' + f.parentName.value.trim(),
-      'Child: ' + f.childName.value.trim(),
-      'Age group: ' + (f.childAge.value || '-'),
-      'WhatsApp: ' + f.waNum.value.trim(),
+      t('msgTitle'),
+      t('msgParent') + f.parentName.value.trim(),
+      t('msgChild') + f.childName.value.trim(),
+      t('msgAge') + (f.childAge.value || '-'),
+      t('msgWhatsApp') + f.waNum.value.trim(),
       '',
-      'About my child: ' + (f.childInfo.value.trim() || '-')
+      t('msgAbout') + (f.childInfo.value.trim() || '-')
     ].join('\n');
     window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
   });
@@ -1518,7 +1733,7 @@
   document.getElementById('campSignup').addEventListener('click', function () {
     closeCamp();
     var info = document.getElementById('childInfo');
-    if (!info.value) info.value = CAMP_POPUP.enquiryNote;
+    if (!info.value) info.value = CAMP_POPUP.enquiryNote[currentLang()];
     document.getElementById('enrollment').scrollIntoView();
     setTimeout(function () { document.getElementById('parentName').focus({ preventScroll: true }); }, 500);
   });
