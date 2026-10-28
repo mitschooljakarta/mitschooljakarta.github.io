@@ -281,14 +281,10 @@
   .bakery .sec-head h2 { color: #fff; }
   .bakery .sec-head p { color: rgba(255,255,255,.8); }
   .bake-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-  /* Bakery photos: each photo is shown whole and centered; the space around it is a soft blur of the same photo */
-  .bake .photo { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); background-color: rgba(255,255,255,.08); isolation: isolate; }
-  .bake .photo::before {
-    content: ''; position: absolute; inset: -30px; z-index: -1;
-    background-image: var(--photo); background-size: cover; background-position: center;
-    filter: blur(22px) brightness(.7) saturate(1.1);
-  }
-  .bake .photo img { object-fit: contain; object-position: center; }
+  /* Bakery photos: three square frames of the same size. Each photo fills its frame and is
+     trimmed evenly at the edges if its shape is different. To choose which part stays in view,
+     add style="object-position: 50% 30%" to that <img> (first number = left–right, second = top–bottom). */
+  .bake .photo { aspect-ratio: 1 / 1; border-radius: var(--radius-lg); background-color: rgba(255,255,255,.08); }
   .bake .photo.is-missing { background-color: #4A2A80; }
   .bake h3 { color: #fff; font-size: 23px; margin: 20px 0 6px; }
   .bake p { font-size: 15.5px; color: rgba(255,255,255,.78); }
@@ -866,7 +862,7 @@
         <p><span lang="en">Cooking and baking with friends from cupcakes to banana bread and even traditional desserts. Perfect for gifts, events and everyday joy.</span><span lang="id">Memasak dan membuat kue bersama teman, mulai dari cupcake, banana bread, hingga kue tradisional. Cocok untuk hadiah, acara, dan kebahagiaan sehari-hari.</span></p>
       </li>
       <li class="bake">
-        <div class="photo"><img class="i18n" src="images/coffee-stand.jpg" alt="A student serving a customer at the school coffee booth" data-id-alt="Seorang siswa melayani pembeli di stan kopi sekolah" loading="lazy"></div>
+        <div class="photo"><img class="i18n" src="images/coffee-stand.jpg" alt="A student serving a customer at the school coffee booth" data-id-alt="Seorang siswa melayani pembeli di stan kopi sekolah" loading="lazy" style="object-position: 50% 45%"></div>
         <h3><span lang="en">Live coffee stand</span><span lang="id">Stan kopi</span></h3>
         <p><span lang="en">Visit our school front for a cup brewed by our students. Each interaction is a step toward independence and career readiness.</span><span lang="id">Mampir ke depan sekolah kami untuk secangkir kopi yang diseduh oleh siswa. Setiap interaksi adalah langkah menuju kemandirian dan kesiapan kerja.</span></p>
       </li>
@@ -1619,15 +1615,6 @@
       video.play().catch(function () {});
     });
   }
-
-  /* Bakery photos: use each photo, blurred, to fill the space around it */
-  document.querySelectorAll('.bake .photo img').forEach(function (img) {
-    function fill() {
-      if (img.naturalWidth) img.parentNode.style.setProperty('--photo', 'url("' + img.currentSrc + '")');
-    }
-    if (img.complete) fill();
-    img.addEventListener('load', fill);
-  });
 
   /* More moments: arrows and the clip player */
   (function () {
