@@ -238,6 +238,13 @@
   .about-photo { border-radius: var(--radius-xl); width: fit-content; max-width: 100%; }
   .about-photo img { width: auto; height: auto; max-width: 100%; max-height: 680px; }
   .about-photo.is-missing { width: 100%; aspect-ratio: 4 / 5; }
+  /* About photo: the second photo fades in over the first, then out again.
+     The timing is set in ABOUT_PHOTO_FADE near the bottom of this file. */
+  .fader .fade-in {
+    position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; object-fit: cover;
+    opacity: 0; transition: opacity var(--fade-time, 1s) ease-in-out;
+  }
+  .fader.show-second .fade-in { opacity: 1; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
   .chips li { font-size: 14px; font-weight: 500; padding: 7px 15px; border-radius: 999px; background: var(--lilac); color: var(--plum); }
   .chips li:nth-child(3n+2) { background: var(--peach); }
@@ -664,9 +671,14 @@
   <div class="wrap">
     <div class="about-grid">
       <div>
-        <!-- This photo is shown whole, in its own shape (portrait or landscape), never cropped. -->
-        <div class="photo about-photo">
+        <!-- Two photos that slowly fade back and forth.
+             1st photo: images/classroom.jpeg (shown whole, never cropped; it sets the frame's shape).
+             2nd photo: images/mitsch.jpeg. A photo with the same shape as the first fits best;
+             a different shape gets trimmed at the edges to fit the frame.
+             If mitsch.jpeg is missing, the first photo simply stays. -->
+        <div class="photo about-photo fader">
           <img class="i18n" src="images/classroom.jpeg" alt="Students in a class at MIT School" data-id-alt="Siswa belajar di kelas MIT School" loading="lazy">
+          <img class="i18n fade-in" src="images/mitsch.jpeg" alt="Another moment from class at MIT School" data-id-alt="Momen lain dari kelas di MIT School" loading="lazy" data-optional>
         </div>
         <ul class="chips i18n" aria-label="What we focus on" data-id-aria-label="Fokus kami">
           <li><span lang="en">Autism specialist</span><span lang="id">Spesialis autisme</span></li>
@@ -1204,6 +1216,12 @@
   };
   // Tip: add ?camp to the end of your web address to preview the pop-up any time.
 
+  /* About photo ("Built for every kind of mind"): how the two photos take turns */
+  var ABOUT_PHOTO_FADE = {
+    showSeconds: 3,   // how long each photo stays before it changes
+    fadeSeconds: 1    // how long the fade from one photo to the other takes
+  };
+
   /* Instagram posts on the website (step-by-step help: START-HERE.md, step 2) */
   var INSTAGRAM = {
     // AUTOMATIC: paste your Behold feed link between the quotes,
@@ -1446,6 +1464,7 @@
     if (img.dataset.fallback) queue = queue.concat(photoVariants(img.dataset.fallback));
     function fail() {
       if (queue.length) { img.src = queue.shift(); return; }
+      if (img.hasAttribute('data-optional')) { img.remove(); return; }   // an extra photo you haven't added yet
       var box = img.closest('.photo, .orb-photo');
       if (box) box.classList.add('is-missing');
       console.warn('Image not found:', img.getAttribute('src'));
@@ -1615,6 +1634,28 @@
       video.play().catch(function () {});
     });
   }
+
+  /* About photo: the two photos take turns. Pauses while the mouse is over it, and stays
+     on the first photo for visitors who have turned off animations on their device. */
+  (function () {
+    var box = document.querySelector('.fader');
+    if (!box) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    box.style.setProperty('--fade-time', ABOUT_PHOTO_FADE.fadeSeconds + 's');
+    var paused = false;
+    if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+      box.addEventListener('mouseenter', function () { paused = true; });
+      box.addEventListener('mouseleave', function () { paused = false; });
+    }
+    function swap() {
+      if (paused || document.hidden || !box.querySelector('.fade-in')) return;
+      box.classList.toggle('show-second');
+    }
+    setTimeout(function () {
+      swap();
+      setInterval(swap, (ABOUT_PHOTO_FADE.showSeconds + ABOUT_PHOTO_FADE.fadeSeconds) * 1000);
+    }, ABOUT_PHOTO_FADE.showSeconds * 1000);
+  })();
 
   /* More moments: arrows and the clip player */
   (function () {
